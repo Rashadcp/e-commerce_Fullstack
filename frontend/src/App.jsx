@@ -10,10 +10,7 @@ import Payment from "./pages/Payment";
 import Address from "./pages/Address";
 import OrderDetails from "./pages/OrderDetails";
 import Wishlist from "./pages/Wishlist";
-<<<<<<< HEAD
 import NotFound from "./pages/NotFound";
-=======
->>>>>>> 21455ae0686bc2502dc71dc878e983fce041641e
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -64,12 +61,9 @@ function AppContent() {
           <Route path="orders" element={<AdminOrders />} />
           <Route path="users" element={<AdminUsers />} />
         </Route>
-<<<<<<< HEAD
 
         {/* Catch-all for 404 */}
         <Route path="*" element={<NotFound />} />
-=======
->>>>>>> 21455ae0686bc2502dc71dc878e983fce041641e
       </Routes>
     </>
   );

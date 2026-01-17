@@ -76,7 +76,6 @@ export const createUser = async (req, res) => {
 
 // @desc    Get all users (Admin only)
 // @route   GET /users
-<<<<<<< HEAD
 // @desc    Get all users (Admin only)
 // @route   GET /users
 export const getUsers = async (req, res) => {
@@ -107,14 +106,6 @@ export const getUsers = async (req, res) => {
             currentPage: Number(page),
             totalUsers: count
         });
-=======
-export const getUsers = async (req, res) => {
-    try {
-        const { email } = req.query;
-        const filter = email ? { email } : {};
-        const users = await User.find(filter);
-        res.json(users);
->>>>>>> 21455ae0686bc2502dc71dc878e983fce041641e
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

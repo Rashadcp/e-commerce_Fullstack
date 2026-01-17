@@ -1,9 +1,5 @@
 import { useEffect, useState } from 'react';
-<<<<<<< HEAD
 import { orderAPI, productAPI } from '../services/api';
-=======
-import axios from 'axios';
->>>>>>> 21455ae0686bc2502dc71dc878e983fce041641e
 
 function AdminOverview() {
   const [orders, setOrders] = useState([]);
@@ -14,7 +10,6 @@ function AdminOverview() {
     async function fetchData() {
       try {
         const [ordersRes, productsRes] = await Promise.all([
-<<<<<<< HEAD
           orderAPI.getAll(),
           productAPI.getAll(),
         ]);
@@ -26,12 +21,6 @@ function AdminOverview() {
           setOrders(ordersRes.data || []);
         }
 
-=======
-          axios.get('http://localhost:5000/orders'),
-          axios.get('http://localhost:5000/products'),
-        ]);
-        setOrders(ordersRes.data || []);
->>>>>>> 21455ae0686bc2502dc71dc878e983fce041641e
         // Handle both array (old) and paginated object (new)
         if (productsRes.data.products) {
           setProducts(productsRes.data.products);
@@ -220,11 +209,7 @@ function AdminOverview() {
         </div>
       </div>
 
-<<<<<<< HEAD
       <div className="mt-4 bg-white p-4 rounded shadow overflow-x-auto">
-=======
-      <div className="mt-4 bg-white p-4 rounded shadow">
->>>>>>> 21455ae0686bc2502dc71dc878e983fce041641e
         <h3 className="font-semibold mb-3">Revenue (last 7 days)</h3>
         <BarChart data={last7} width={720} height={180} />
       </div>
@@ -257,13 +242,13 @@ function AdminOverview() {
             {topProducts.length === 0 ? (
               <p className="text-sm text-gray-500">No sales data yet</p>
             ) : (
-              topProducts.map(([name, qty], idx) => (
+              (topProducts.map(([name, qty], idx) => (
                 <div key={name} className="flex items-center gap-2 py-1">
                   <span className="w-3 h-3" style={{ background: `hsl(${(idx * 60) % 360} 70% 60%)`, display: 'inline-block', borderRadius: 4 }}></span>
                   <span className="text-sm flex-1">{name}</span>
                   <span className="font-medium">{qty}</span>
                 </div>
-              ))
+              )))
             )}
           </div>
         </div>
@@ -278,11 +263,7 @@ function AdminOverview() {
             <div key={o.id} className="flex justify-between py-2 border-b last:border-b-0">
               <div>
                 <p className="font-medium">Order #{o.id}</p>
-<<<<<<< HEAD
                 <p className="text-sm text-gray-500">{o.customerName || 'Unknown'} • {o.items?.length || 0} items</p>
-=======
-                <p className="text-sm text-gray-500">{o.user} • {o.items?.length || 0} items</p>
->>>>>>> 21455ae0686bc2502dc71dc878e983fce041641e
               </div>
               <div className="text-right">
                 <p className="font-medium">₹{o.totalAmount}</p>

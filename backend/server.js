@@ -23,20 +23,14 @@ import userRoutes from "./routes/userRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js";
 import wishlistRoutes from "./routes/wishlistRoutes.js";
-<<<<<<< HEAD
 import adminRoutes from "./routes/adminRoutes.js";
-=======
->>>>>>> 21455ae0686bc2502dc71dc878e983fce041641e
 
 app.use("/products", productRoutes);
 app.use("/users", userRoutes);
 app.use("/orders", orderRoutes);
 app.use("/cart", cartRoutes);
 app.use("/wishlist", wishlistRoutes);
-<<<<<<< HEAD
 app.use("/admin", adminRoutes);
-=======
->>>>>>> 21455ae0686bc2502dc71dc878e983fce041641e
 
 const PORT = process.env.PORT || 5000;
 

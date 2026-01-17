@@ -3,21 +3,15 @@ import mongoose from "mongoose";
 
 // @desc    Get orders (Admin sees all, user sees their own)
 // @route   GET /orders
-<<<<<<< HEAD
 // @desc    Get orders (Admin sees all, user sees their own)
 // @route   GET /orders
 export const getOrders = async (req, res) => {
     try {
         const { page = 1, limit = 10, search = "", status = "" } = req.query;
-=======
-export const getOrders = async (req, res) => {
-    try {
->>>>>>> 21455ae0686bc2502dc71dc878e983fce041641e
         let filter = {};
 
         if (!req.user.isAdmin) {
             filter.user = req.user._id;
-<<<<<<< HEAD
         } else {
             // Admin filters
             if (search) {
@@ -29,10 +23,6 @@ export const getOrders = async (req, res) => {
                 }
 
                 // 2. Search by User Name/Email -> Find User IDs -> Filter Orders by User IDs
-                // We need to import User model first. Added import at top.
-                // Dynamic import or leverage existing User import if I add it. 
-                // Since I can't easily add import at top with this replace, I will assume I will add it in a separate step or 
-                // use mongoose.model("User") if registered.
                 const User = mongoose.model("User");
                 const users = await User.find({
                     $or: [
@@ -50,8 +40,6 @@ export const getOrders = async (req, res) => {
                     filter.$or = searchQueries;
                 } else if (!filter.$or) {
                     // If searched but no ID match and no User match, limit results to nothing to avoid showing all
-                    // But if I returned empty filter, it would show all. 
-                    // So if search is present but no matches found, we force empty result.
                     filter._id = new mongoose.Types.ObjectId(); // Dummy ID that won't match
                 }
             }
@@ -76,21 +64,6 @@ export const getOrders = async (req, res) => {
             orderObj.customerName = orderObj.user?.name || "Unknown Customer";
             orderObj.customerEmail = orderObj.user?.email || "";
             orderObj.customerPhone = orderObj.user?.number || "";
-=======
-        } else if (req.query.user) {
-            // Admin can filter by specific user ID
-            filter.user = req.query.user;
-        }
-
-        const ordersRaw = await Order.find(filter)
-            .populate("items.product", "image")
-            .sort({ date: -1 });
-
-        // Backfill images for old orders that didn't save them
-        const orders = ordersRaw.map(order => {
-            const orderObj = order.toObject();
-            orderObj.id = orderObj._id;
->>>>>>> 21455ae0686bc2502dc71dc878e983fce041641e
             orderObj.items = orderObj.items.map(item => ({
                 ...item,
                 image: item.image || item.product?.image || ""
@@ -98,16 +71,13 @@ export const getOrders = async (req, res) => {
             return orderObj;
         });
 
-<<<<<<< HEAD
         res.json({
             orders,
             totalPages: Math.ceil(count / limit),
             currentPage: Number(page),
             totalOrders: count
         });
-=======
-        res.json(orders);
->>>>>>> 21455ae0686bc2502dc71dc878e983fce041641e
+
     } catch (error) {
         console.error("Get Orders Error:", error);
         res.status(500).json({ message: error.message });
