@@ -1,11 +1,16 @@
 import { useState, useEffect } from 'react';
+<<<<<<< HEAD
 import { userAPI } from '../services/api';
+=======
+import axios from 'axios';
+>>>>>>> 21455ae0686bc2502dc71dc878e983fce041641e
 import { toast } from 'react-toastify';
 
 function AdminUsers() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedUser, setSelectedUser] = useState(null);
+<<<<<<< HEAD
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -51,6 +56,20 @@ function AdminUsers() {
         // Fallback if backend structure differs temporarily
         setUsers(response.data);
       }
+=======
+  const [searchTerm, setSearchTerm] = useState(''); // 🔍 added state for search
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const fetchUsers = async () => {
+    try {
+      const token = localStorage.getItem('adminToken');
+      const config = { headers: { Authorization: `Bearer ${token}` } };
+      const response = await axios.get('http://localhost:5000/users', config);
+      setUsers(response.data);
+>>>>>>> 21455ae0686bc2502dc71dc878e983fce041641e
       setLoading(false);
     } catch (error) {
       console.error('Error fetching users:', error);
@@ -59,6 +78,7 @@ function AdminUsers() {
     }
   };
 
+<<<<<<< HEAD
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= totalPages) {
       setCurrentPage(newPage);
@@ -66,12 +86,21 @@ function AdminUsers() {
     }
   };
 
+=======
+>>>>>>> 21455ae0686bc2502dc71dc878e983fce041641e
   const handleDeleteUser = async (userId) => {
     if (!window.confirm('Are you sure you want to delete this user?')) return;
 
     try {
+<<<<<<< HEAD
       await userAPI.deleteUser(userId);
       fetchUsers(currentPage, searchTerm);
+=======
+      const token = localStorage.getItem('adminToken');
+      const config = { headers: { Authorization: `Bearer ${token}` } };
+      await axios.delete(`http://localhost:5000/users/${userId}`, config);
+      fetchUsers();
+>>>>>>> 21455ae0686bc2502dc71dc878e983fce041641e
       toast.success('User deleted successfully');
     } catch (error) {
       console.error('Error deleting user:', error);
@@ -84,8 +113,15 @@ function AdminUsers() {
     if (!window.confirm(`Are you sure you want to ${action} this user?`)) return;
 
     try {
+<<<<<<< HEAD
       await userAPI.updateUser(userId, { blocked: !currentlyBlocked });
       fetchUsers(currentPage, searchTerm);
+=======
+      const token = localStorage.getItem('adminToken');
+      const config = { headers: { Authorization: `Bearer ${token}` } };
+      await axios.patch(`http://localhost:5000/users/${userId}`, { blocked: !currentlyBlocked }, config);
+      fetchUsers();
+>>>>>>> 21455ae0686bc2502dc71dc878e983fce041641e
 
       // Update modal state if open
       if (selectedUser?.id === userId) {
@@ -99,7 +135,20 @@ function AdminUsers() {
     }
   };
 
+<<<<<<< HEAD
   if (loading && users.length === 0) return <div className="text-center p-4">Loading...</div>;
+=======
+
+
+  // 🔍 Filter users based on search term
+  const filteredUsers = users.filter((user) =>
+    user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.number.toString().includes(searchTerm)
+  );
+
+  if (loading) return <div className="text-center p-4">Loading...</div>;
+>>>>>>> 21455ae0686bc2502dc71dc878e983fce041641e
 
   return (
     <div className="p-6">
@@ -109,15 +158,31 @@ function AdminUsers() {
       <div className="flex items-center gap-2 mb-4">
         <input
           type="text"
+<<<<<<< HEAD
           placeholder="Search by name or email..."
+=======
+          placeholder="Search by name, email, or phone..."
+>>>>>>> 21455ae0686bc2502dc71dc878e983fce041641e
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
         />
+<<<<<<< HEAD
         {/* Clear button implicitly handled by setting text to '' which triggers effect */}
       </div>
 
       <div className="bg-white rounded-lg shadow-md overflow-x-auto">
+=======
+        <button
+          onClick={() => setSearchTerm('')}
+          className="bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-2 rounded-lg"
+        >
+          Clear
+        </button>
+      </div>
+
+      <div className="bg-white rounded-lg shadow-md overflow-hidden">
+>>>>>>> 21455ae0686bc2502dc71dc878e983fce041641e
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
@@ -129,9 +194,15 @@ function AdminUsers() {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
+<<<<<<< HEAD
             {users.length > 0 ? (
               users.map((user) => (
                 <tr key={user._id || user.id} className="hover:bg-gray-50">
+=======
+            {filteredUsers.length > 0 ? (
+              filteredUsers.map((user) => (
+                <tr key={user.id} className="hover:bg-gray-50">
+>>>>>>> 21455ae0686bc2502dc71dc878e983fce041641e
                   <td className="px-6 py-4">{user.name}</td>
                   <td className="px-6 py-4">{user.email}</td>
                   <td className="px-6 py-4">{user.number}</td>
@@ -152,7 +223,11 @@ function AdminUsers() {
                       View Details
                     </button>
                     <button
+<<<<<<< HEAD
                       onClick={() => handleToggleBlock(user._id || user.id, !!user.blocked)}
+=======
+                      onClick={() => handleToggleBlock(user.id, !!user.blocked)}
+>>>>>>> 21455ae0686bc2502dc71dc878e983fce041641e
                       className={`mr-3 ${user.blocked
                         ? 'text-green-600 hover:text-green-900'
                         : 'text-yellow-600 hover:text-yellow-900'
@@ -161,7 +236,11 @@ function AdminUsers() {
                       {user.blocked ? 'Unblock' : 'Block'}
                     </button>
                     <button
+<<<<<<< HEAD
                       onClick={() => handleDeleteUser(user._id || user.id)}
+=======
+                      onClick={() => handleDeleteUser(user.id)}
+>>>>>>> 21455ae0686bc2502dc71dc878e983fce041641e
                       className="text-red-600 hover:text-red-900"
                     >
                       Delete
@@ -172,7 +251,11 @@ function AdminUsers() {
             ) : (
               <tr>
                 <td colSpan="5" className="text-center py-6 text-gray-500">
+<<<<<<< HEAD
                   {loading ? "Searching..." : "No users found."}
+=======
+                  No users found.
+>>>>>>> 21455ae0686bc2502dc71dc878e983fce041641e
                 </td>
               </tr>
             )}
@@ -180,6 +263,7 @@ function AdminUsers() {
         </table>
       </div>
 
+<<<<<<< HEAD
       {/* Pagination Controls */}
       {totalPages > 1 && (
         <div className="flex justify-center mt-6 space-x-2">
@@ -202,6 +286,9 @@ function AdminUsers() {
       )}
 
       {/* User Details Modal (kept mostly same, ensured ID usage) */}
+=======
+      {/* User Details Modal */}
+>>>>>>> 21455ae0686bc2502dc71dc878e983fce041641e
       {selectedUser && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg w-full max-w-md p-6">
@@ -238,7 +325,11 @@ function AdminUsers() {
               <div className="flex gap-2">
                 <button
                   onClick={() =>
+<<<<<<< HEAD
                     handleToggleBlock(selectedUser._id || selectedUser.id, !!selectedUser.blocked)
+=======
+                    handleToggleBlock(selectedUser.id, !!selectedUser.blocked)
+>>>>>>> 21455ae0686bc2502dc71dc878e983fce041641e
                   }
                   className={`px-3 py-1 rounded ${selectedUser.blocked
                     ? 'bg-green-100 text-green-800'
@@ -248,7 +339,11 @@ function AdminUsers() {
                   {selectedUser.blocked ? 'Unblock User' : 'Block User'}
                 </button>
                 <button
+<<<<<<< HEAD
                   onClick={() => handleDeleteUser(selectedUser._id || selectedUser.id)}
+=======
+                  onClick={() => handleDeleteUser(selectedUser.id)}
+>>>>>>> 21455ae0686bc2502dc71dc878e983fce041641e
                   className="px-3 py-1 rounded bg-red-100 text-red-800"
                 >
                   Delete User

@@ -1,5 +1,9 @@
 import { useState, useEffect } from "react";
+<<<<<<< HEAD
 import { orderAPI } from "../services/api";
+=======
+import axios from "axios";
+>>>>>>> 21455ae0686bc2502dc71dc878e983fce041641e
 import { formatDate } from "../utils/dateUtils";
 import { toast } from "react-toastify";
 import { motion, AnimatePresence } from "framer-motion";
@@ -9,6 +13,7 @@ function AdminOrders() {
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+<<<<<<< HEAD
   const [isFocused, setIsFocused] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -37,6 +42,14 @@ function AdminOrders() {
       } else {
         setOrders(response.data);
       }
+=======
+  const [isFocused, setIsFocused] = useState(false); // 👀 For animated placeholder
+
+  const fetchOrders = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/orders");
+      setOrders(response.data); // Backend handles newest-first sorting
+>>>>>>> 21455ae0686bc2502dc71dc878e983fce041641e
       setLoading(false);
     } catch (error) {
       console.error("Error fetching orders:", error);
@@ -45,6 +58,7 @@ function AdminOrders() {
     }
   };
 
+<<<<<<< HEAD
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= totalPages) {
       setCurrentPage(newPage);
@@ -60,6 +74,20 @@ function AdminOrders() {
         status: newStatus,
       });
       fetchOrders(currentPage, searchTerm);
+=======
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
+  const handleStatusChange = async (orderId, newStatus) => {
+    try {
+      const order = orders.find((o) => o.id === orderId);
+      await axios.put(`http://localhost:5000/orders/${orderId}`, {
+        ...order,
+        status: newStatus,
+      });
+      fetchOrders();
+>>>>>>> 21455ae0686bc2502dc71dc878e983fce041641e
       toast.success("Order status updated");
     } catch (error) {
       console.error("Error updating order:", error);
@@ -69,7 +97,19 @@ function AdminOrders() {
 
   const handleSearch = (e) => e.preventDefault();
 
+<<<<<<< HEAD
   if (loading && orders.length === 0) return <div className="text-center p-4">Loading...</div>;
+=======
+  // 🔍 Now includes search by order.status also
+  const filteredOrders = orders.filter(
+    (order) =>
+      order.user?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.id?.toString().includes(searchTerm) ||
+      order.status?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  if (loading) return <div className="text-center p-4">Loading...</div>;
+>>>>>>> 21455ae0686bc2502dc71dc878e983fce041641e
 
   return (
     <div className="p-6">
@@ -87,7 +127,11 @@ function AdminOrders() {
             transition={{ duration: 0.1 }}
             className="absolute left-4 top-3 text-gray-400 pointer-events-none text-sm"
           >
+<<<<<<< HEAD
             Search by order ID
+=======
+            Search by user, order ID, or status
+>>>>>>> 21455ae0686bc2502dc71dc878e983fce041641e
           </motion.label>
 
           <input
@@ -96,7 +140,11 @@ function AdminOrders() {
             onChange={(e) => setSearchTerm(e.target.value)}
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
+<<<<<<< HEAD
             className="border border-gray-300 rounded-lg px-4 pt-5 pb-2 w-full md:w-72 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white"
+=======
+            className="border border-gray-300 rounded-lg px-4 pt-5 pb-2 w-72 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white"
+>>>>>>> 21455ae0686bc2502dc71dc878e983fce041641e
           />
           <button
             type="submit"
@@ -108,7 +156,11 @@ function AdminOrders() {
       </div>
 
       {/* 📋 Orders Table */}
+<<<<<<< HEAD
       <div className="bg-white rounded-lg shadow-md overflow-x-auto">
+=======
+      <div className="bg-white rounded-lg shadow-md overflow-hidden">
+>>>>>>> 21455ae0686bc2502dc71dc878e983fce041641e
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
@@ -123,6 +175,7 @@ function AdminOrders() {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
+<<<<<<< HEAD
             {orders.length > 0 ? (
               orders.map((order) => {
                 const orderId = order.id || order._id;
@@ -176,6 +229,58 @@ function AdminOrders() {
               <tr>
                 <td colSpan="6" className="text-center py-6 text-gray-500">
                   {loading ? "Searching..." : "No matching orders found"}
+=======
+            {filteredOrders.length > 0 ? (
+              filteredOrders.map((order) => (
+                <tr key={order.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4">{order.id}</td>
+                  <td className="px-6 py-4">{order.user}</td>
+                  <td className="px-6 py-4">{formatDate(order.date)}</td>
+                  <td className="px-6 py-4">₹{order.totalAmount}</td>
+                  <td className="px-6 py-4">
+                    <span
+                      className={`px-2 py-1 rounded-full text-sm ${order.status === "Delivered"
+                        ? "bg-green-100 text-green-800"
+                        : order.status === "Processing"
+                          ? "bg-yellow-100 text-yellow-800"
+                          : order.status === "Paid"
+                            ? "bg-blue-100 text-blue-800"
+                            : order.status === "Cancelled"
+                              ? "bg-red-100 text-red-800"
+                              : "bg-gray-100 text-gray-800"
+                        }`}
+                    >
+                      {order.status}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <select
+                      value={order.status}
+                      onChange={(e) => handleStatusChange(order.id, e.target.value)}
+                      className="border rounded px-2 py-1 text-sm"
+                    >
+                      <option value="Pending">Pending</option>
+                      <option value="Processing">Processing</option>
+                      <option value="Shipped">Shipped</option>
+                      <option value="Delivered">Delivered</option>
+                      <option value="Cancelled">Cancelled</option>
+                    </select>
+                    <button
+                      onClick={() =>
+                        setSelectedOrder(selectedOrder?.id === order.id ? null : order)
+                      }
+                      className="ml-3 text-blue-600 hover:text-blue-900 font-medium"
+                    >
+                      View Details
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="6" className="text-center py-6 text-gray-500">
+                  No matching orders found
+>>>>>>> 21455ae0686bc2502dc71dc878e983fce041641e
                 </td>
               </tr>
             )}
@@ -183,6 +288,7 @@ function AdminOrders() {
         </table>
       </div>
 
+<<<<<<< HEAD
       {/* Pagination Controls */}
       {totalPages > 1 && (
         <div className="flex justify-center mt-6 space-x-2 pb-6">
@@ -205,6 +311,9 @@ function AdminOrders() {
       )}
 
       {/* 🪟 Order Details Modal - Kept same logic, just minor ensuring of fields */}
+=======
+      {/* 🪟 Order Details Modal */}
+>>>>>>> 21455ae0686bc2502dc71dc878e983fce041641e
       <AnimatePresence>
         {selectedOrder && (
           <motion.div
@@ -223,7 +332,11 @@ function AdminOrders() {
             >
               <div className="flex justify-between items-center px-6 py-4 border-b bg-white/40 backdrop-blur-lg rounded-t-2xl">
                 <h3 className="text-lg font-semibold text-gray-800">
+<<<<<<< HEAD
                   Order Details #{selectedOrder.id || selectedOrder._id}
+=======
+                  Order Details #{selectedOrder.id}
+>>>>>>> 21455ae0686bc2502dc71dc878e983fce041641e
                 </h3>
                 <button
                   onClick={() => setSelectedOrder(null)}
@@ -236,6 +349,7 @@ function AdminOrders() {
               <div className="px-6 py-4 space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
+<<<<<<< HEAD
                     <p className="text-gray-600 text-sm">Customer Name</p>
                     <p className="font-medium">{selectedOrder.customerName}</p>
                   </div>
@@ -246,6 +360,10 @@ function AdminOrders() {
                   <div>
                     <p className="text-gray-600 text-sm">Customer Phone</p>
                     <p className="font-medium">{selectedOrder.customerPhone || 'N/A'}</p>
+=======
+                    <p className="text-gray-600 text-sm">Customer Email</p>
+                    <p className="font-medium">{selectedOrder.user}</p>
+>>>>>>> 21455ae0686bc2502dc71dc878e983fce041641e
                   </div>
                   <div>
                     <p className="text-gray-600 text-sm">Order Date</p>

@@ -3,15 +3,21 @@ import mongoose from "mongoose";
 
 // @desc    Get orders (Admin sees all, user sees their own)
 // @route   GET /orders
+<<<<<<< HEAD
 // @desc    Get orders (Admin sees all, user sees their own)
 // @route   GET /orders
 export const getOrders = async (req, res) => {
     try {
         const { page = 1, limit = 10, search = "", status = "" } = req.query;
+=======
+export const getOrders = async (req, res) => {
+    try {
+>>>>>>> 21455ae0686bc2502dc71dc878e983fce041641e
         let filter = {};
 
         if (!req.user.isAdmin) {
             filter.user = req.user._id;
+<<<<<<< HEAD
         } else {
             // Admin filters
             if (search) {
@@ -70,6 +76,21 @@ export const getOrders = async (req, res) => {
             orderObj.customerName = orderObj.user?.name || "Unknown Customer";
             orderObj.customerEmail = orderObj.user?.email || "";
             orderObj.customerPhone = orderObj.user?.number || "";
+=======
+        } else if (req.query.user) {
+            // Admin can filter by specific user ID
+            filter.user = req.query.user;
+        }
+
+        const ordersRaw = await Order.find(filter)
+            .populate("items.product", "image")
+            .sort({ date: -1 });
+
+        // Backfill images for old orders that didn't save them
+        const orders = ordersRaw.map(order => {
+            const orderObj = order.toObject();
+            orderObj.id = orderObj._id;
+>>>>>>> 21455ae0686bc2502dc71dc878e983fce041641e
             orderObj.items = orderObj.items.map(item => ({
                 ...item,
                 image: item.image || item.product?.image || ""
@@ -77,12 +98,16 @@ export const getOrders = async (req, res) => {
             return orderObj;
         });
 
+<<<<<<< HEAD
         res.json({
             orders,
             totalPages: Math.ceil(count / limit),
             currentPage: Number(page),
             totalOrders: count
         });
+=======
+        res.json(orders);
+>>>>>>> 21455ae0686bc2502dc71dc878e983fce041641e
     } catch (error) {
         console.error("Get Orders Error:", error);
         res.status(500).json({ message: error.message });
