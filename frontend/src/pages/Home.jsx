@@ -14,11 +14,11 @@ function Home() {
       />
 
       {/* Overlay for better contrast */}
-      <div className="absolute inset-0 bg- bg-opacity-60 flex flex-col items-center justify-center text-center px-6">
-        
-  <h1 className="text-white text-5xl md:text-7xl font-bold font-[Russo+One] tracking-tight drop-shadow-[0_0_10px_#00b2fe]">
-  Welcome to <span className="text-[#fe9d00]">REFUEL</span> Energy Drinks
-</h1>
+      <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center text-center px-6">
+
+        <h1 className="text-white text-5xl md:text-7xl font-bold font-[Russo+One] tracking-tight drop-shadow-[0_0_10px_#00b2fe]">
+          Welcome to <span className="text-[#fe9d00]">REFUEL</span> Energy Drinks
+        </h1>
 
 
 

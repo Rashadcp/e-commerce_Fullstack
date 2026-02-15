@@ -29,7 +29,7 @@ function OrderDetails() {
     };
 
     axios
-      .get(`${import.meta.env.VITE_API_URL || "/api"}/orders`, config)
+      .get(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}/orders`, config)
       .then((res) => {
         // Handle both simple array and paginated object responses
         if (res.data.orders && Array.isArray(res.data.orders)) {

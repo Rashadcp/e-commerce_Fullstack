@@ -3,7 +3,7 @@ import { useState, useContext } from "react";
 import { CartContext } from "./CartProvider";
 import axios from "axios";
 
-const API_URL = import.meta.env.VITE_API_URL || "/api";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 function Payment() {
   const { cart, clearCart, user } = useContext(CartContext);
