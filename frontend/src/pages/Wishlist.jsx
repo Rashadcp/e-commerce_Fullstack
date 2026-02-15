@@ -25,7 +25,7 @@ function Wishlist() {
           >
 
             <img
-              src={item.image?.startsWith("http") ? item.image : `/${item.image || ""}`}
+              src={item.image?.match(/^(http|data:)/) ? item.image : `/${item.image?.replace(/^\/+/, "") || ""}`}
               alt={item.name}
               className="h-60 w-full object-cover mb-4 rounded-lg"
             />

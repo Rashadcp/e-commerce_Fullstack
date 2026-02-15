@@ -45,7 +45,7 @@ function Cart() {
           >
             <div className="flex items-center gap-4">
               <img
-                src={item.image?.startsWith("http") ? item.image : `/${item.image || ""}`}
+                src={item.image?.match(/^(http|data:)/) ? item.image : `/${item.image?.replace(/^\/+/, "") || ""}`}
                 alt={item.name}
                 className="w-20 h-20 object-cover rounded"
               />

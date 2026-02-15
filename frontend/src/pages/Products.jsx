@@ -5,6 +5,7 @@ import { FaHeart, FaShoppingCart } from "react-icons/fa";
 import Footer from "../components/Footer";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
+import { productAPI } from "../services/api";
 
 function Products() {
   const { addToCart, decreaseQuantity, cart, toggleWishlist, wishlist, user } = useContext(CartContext);
@@ -57,16 +58,14 @@ function Products() {
     const fetchProducts = async () => {
       setLoading(true);
       try {
-        const res = await axios.get("http://localhost:5000/products", {
-          params: {
-            page: currentPage,
-            limit: productsPerPage,
-            search: debouncedSearch,
-            category: filterCategory,
-            sort: sortOption,
-            minPrice: priceRange[0],
-            maxPrice: priceRange[1]
-          }
+        const res = await productAPI.getAll({
+          page: currentPage,
+          limit: productsPerPage,
+          search: debouncedSearch,
+          category: filterCategory,
+          sort: sortOption,
+          minPrice: priceRange[0],
+          maxPrice: priceRange[1]
         });
 
         // Ensure we handle both array and paginated response object
@@ -187,7 +186,11 @@ function Products() {
                   >
                     <div className="overflow-hidden rounded-lg relative">
                       <img
-                        src={product.image?.startsWith("http") ? product.image : `/${product.image || ""}`}
+                        src={
+                          product.image?.match(/^(http|data:)/)
+                            ? product.image
+                            : `/${product.image?.replace(/^\/+/, "") || ""}`
+                        }
                         alt={product.name}
                         className="h-60 w-full object-cover mb-4 rounded transition-transform duration-300 hover:scale-110"
                       />

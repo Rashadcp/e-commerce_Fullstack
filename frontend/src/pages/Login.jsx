@@ -1,6 +1,7 @@
 import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { userAPI } from "../services/api";
 import { CartContext } from "./CartProvider";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { toast } from 'react-toastify';
@@ -19,7 +20,7 @@ function Login() {
     setErrorMessage("");
 
     try {
-      const { data } = await axios.post("http://localhost:5000/users/login", { email, password });
+      const { data } = await userAPI.login({ email, password });
 
       if (data.isAdmin) {
         loginAdmin(); // Note: we might want to store token for admin too

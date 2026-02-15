@@ -271,7 +271,11 @@ function AdminOrders() {
                       >
                         <div className="flex items-center">
                           <img
-                            src={item.image?.startsWith("http") ? item.image : `/${item.image || ""}`}
+                            src={
+                              item.image?.match(/^(http|data:)/)
+                                ? item.image
+                                : `/${item.image?.replace(/^\/+/, "") || ""}`
+                            }
                             alt={item.name}
                             className="w-12 h-12 rounded object-cover mr-3"
                           />

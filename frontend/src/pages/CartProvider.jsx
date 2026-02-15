@@ -73,7 +73,7 @@ export function CartProvider({ children }) {
       const config = {
         headers: { Authorization: `Bearer ${user.token}` },
       };
-      const res = await axios.get(`http://localhost:5000/cart`, config);
+      const res = await axios.get(`${import.meta.env.VITE_API_URL || "/api"}/cart`, config);
       const formattedCart = res.data.map(item => {
         const productInfo = typeof item.productId === 'object' ? item.productId : {};
         const productId = item.productId?._id || item.productId?.id || (typeof item.productId === 'string' ? item.productId : null);
@@ -109,7 +109,7 @@ export function CartProvider({ children }) {
         quantity: item.quantity || 1
       }));
 
-      await axios.put(`http://localhost:5000/cart`, { cart: cartToSave }, config);
+      await axios.put(`${import.meta.env.VITE_API_URL || "/api"}/cart`, { cart: cartToSave }, config);
     } catch (err) {
       console.error("Error saving cart to backend:", err);
     }
@@ -120,7 +120,7 @@ export function CartProvider({ children }) {
       const config = {
         headers: { Authorization: `Bearer ${user.token}` },
       };
-      const res = await axios.get(`http://localhost:5000/wishlist`, config);
+      const res = await axios.get(`${import.meta.env.VITE_API_URL || "/api"}/wishlist`, config);
       const formatted = res.data.map(item => {
         const productInfo = typeof item.productId === 'object' ? item.productId : {};
         const productId = item.productId?._id || item.productId?.id || (typeof item.productId === 'string' ? item.productId : null);
@@ -150,7 +150,7 @@ export function CartProvider({ children }) {
       const wishlistToSave = updatedWishlist.map(item => ({
         productId: item.id || item._id
       }));
-      await axios.put(`http://localhost:5000/wishlist`, { wishlist: wishlistToSave }, config);
+      await axios.put(`${import.meta.env.VITE_API_URL || "/api"}/wishlist`, { wishlist: wishlistToSave }, config);
     } catch (err) {
       console.error("Error saving wishlist to backend:", err);
     }

@@ -11,7 +11,7 @@ export const getDashboardStats = async (req, res) => {
         const totalOrders = await Order.countDocuments();
         const totalProducts = await Product.countDocuments();
 
-        const orders = await Order.find();
+        const orders = await Order.find()
         const totalRevenue = orders.reduce((acc, order) => acc + (order.totalAmount || 0), 0);
 
         const recentOrders = await Order.find()

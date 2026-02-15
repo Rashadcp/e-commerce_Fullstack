@@ -1,9 +1,9 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 import connectDB from "./config/db.js";
-
-dotenv.config();
 
 const app = express();
 
@@ -27,7 +27,10 @@ import adminRoutes from "./routes/adminRoutes.js";
 
 app.use("/products", productRoutes);
 app.use("/users", userRoutes);
-app.use("/orders", orderRoutes);
+app.use("/orders", (req, res, next) => {
+  console.log(`[ORDER ROUTE] ${req.method} ${req.url}`);
+  next();
+}, orderRoutes);
 app.use("/cart", cartRoutes);
 app.use("/wishlist", wishlistRoutes);
 app.use("/admin", adminRoutes);

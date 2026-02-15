@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import axios from "axios";
+import { userAPI } from "../services/api";
 import { toast } from 'react-toastify';
 
 function Register() {
@@ -35,7 +36,7 @@ function Register() {
 
     try {
       // Create user
-      await axios.post("http://localhost:5000/users", {
+      await userAPI.register({
         name,
         number,
         email,

@@ -3,6 +3,8 @@ import axios from "axios";
 import { CartContext } from "./CartProvider";
 import { formatDate } from "../utils/dateUtils";
 
+import { Package } from "lucide-react";
+
 function OrderDetails() {
   const { user: contextUser } = useContext(CartContext);
   const [user, setUser] = useState(contextUser || null);
@@ -27,9 +29,16 @@ function OrderDetails() {
     };
 
     axios
-      .get(`http://localhost:5000/orders`, config)
+      .get(`${import.meta.env.VITE_API_URL || "/api"}/orders`, config)
       .then((res) => {
-        setOrders(res.data); // Backend now sorts by newest
+        // Handle both simple array and paginated object responses
+        if (res.data.orders && Array.isArray(res.data.orders)) {
+          setOrders(res.data.orders);
+        } else if (Array.isArray(res.data)) {
+          setOrders(res.data);
+        } else {
+          setOrders([]);
+        }
         setLoading(false);
       })
       .catch((err) => {
@@ -62,8 +71,8 @@ function OrderDetails() {
 
   return (
     <div className="min-h-screen bg-black py-20 px-4">
-      <h1 className="text-4xl font-extrabold text-center text-[#8dc53e] mb-10">
-        My Orders 🛍️
+      <h1 className="text-4xl font-extrabold text-center text-[#8dc53e] mb-10 flex items-center justify-center gap-3">
+        My Orders <Package className="w-8 h-8 text-[#00b2fe]" />
       </h1>
 
       {orders.length === 0 ? (
@@ -109,7 +118,11 @@ function OrderDetails() {
                   >
                     <div className="flex items-center gap-3">
                       <img
-                        src={item.image?.startsWith("http") ? item.image : `/${item.image || ""}`}
+                        src={
+                          item.image?.match(/^(http|data:)/)
+                            ? item.image
+                            : `/${item.image?.replace(/^\/+/, "") || ""}`
+                        }
                         alt={item.name}
                         className="w-16 h-16 object-cover rounded-lg"
                       />

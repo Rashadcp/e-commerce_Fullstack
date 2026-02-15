@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:5000';
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 // Create axios instance with default config
 const api = axios.create({
@@ -37,8 +37,8 @@ api.interceptors.response.use(
 
 // ============= USER APIs =============
 export const userAPI = {
-    login: (credentials) => axios.post(`${API_BASE_URL}/users/login`, credentials),
-    register: (userData) => axios.post(`${API_BASE_URL}/users`, userData),
+    login: (credentials) => api.post('/users/login', credentials),
+    register: (userData) => api.post('/users', userData),
     getAllUsers: (params) => api.get('/users', { params }), // params: { page, limit, search }
     updateUser: (id, data) => api.patch(`/users/${id}`, data),
     deleteUser: (id) => api.delete(`/users/${id}`),

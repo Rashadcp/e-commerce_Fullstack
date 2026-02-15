@@ -1,5 +1,25 @@
 import Order from "../models/Order.js";
+import User from "../models/User.js";
 import mongoose from "mongoose";
+import Razorpay from "razorpay";
+import crypto from "crypto";
+const getRazorpayInstance = () => {
+    const key_id = process.env.RAZORPAY_KEY_ID;
+    const key_secret = process.env.RAZORPAY_KEY_SECRET;
+
+    if (!key_id || !key_secret) {
+        console.error("[ERROR] Razorpay keys missing in .env file!");
+        return null;
+    }
+
+    console.log(`[DEBUG] Using Key ID: ${key_id.substring(0, 10)}...`);
+    console.log(`[DEBUG] Using Secret starts with: ${key_secret.substring(0, 5)}...`);
+
+    return new Razorpay({
+        key_id,
+        key_secret,
+    });
+};
 
 // @desc    Get orders (Admin sees all, user sees their own)
 // @route   GET /orders
@@ -176,5 +196,83 @@ export const updateOrder = async (req, res) => {
         res.json(updatedOrder);
     } catch (error) {
         res.status(400).json({ message: error.message });
+    }
+};
+
+// @desc    Create Razorpay Order
+// @route   POST /orders/razorpay
+export const createRazorpayOrder = async (req, res) => {
+    try {
+        const razorpay = getRazorpayInstance();
+        if (!razorpay) {
+            console.error("Razorpay Error: API keys are not configured properly.");
+            return res.status(500).json({
+                message: "Razorpay keys are not configured. Please add valid keys to your .env file.",
+                details: "Check RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET in backend/.env"
+            });
+        }
+
+        const { amount, currency = "INR", receipt } = req.body;
+        console.log(`[DEBUG] Creating Razorpay order: amount=${amount}, currency=${currency}`);
+
+        if (!amount || isNaN(amount) || amount <= 0) {
+            return res.status(400).json({ message: "Valid amount is required" });
+        }
+
+        const options = {
+            amount: Math.round(amount * 100), // Razorpay expects amount in paise
+            currency,
+            receipt: receipt || `receipt_${Date.now()}`,
+        };
+
+        const order = await razorpay.orders.create(options);
+
+        if (!order) {
+            return res.status(500).json({ message: "Failed to create Razorpay order" });
+        }
+
+        res.status(200).json(order);
+    } catch (error) {
+        console.error("--- RAZORPAY ERROR ---");
+        console.error(error);
+        res.status(500).json({
+            message: "Razorpay order creation failed",
+            details: error.description || error.message || JSON.stringify(error) || "Check backend console"
+        });
+    }
+};
+
+// @desc    Verify Razorpay Payment
+// @route   POST /orders/verify
+export const verifyRazorpayPayment = async (req, res) => {
+    try {
+        const {
+            razorpay_order_id,
+            razorpay_payment_id,
+            razorpay_signature
+        } = req.body;
+
+        const body = razorpay_order_id + "|" + razorpay_payment_id;
+
+        const secret = process.env.RAZORPAY_KEY_SECRET;
+        if (!secret) {
+            return res.status(500).json({ message: "Razorpay secret key not configured" });
+        }
+
+        const expectedSignature = crypto
+            .createHmac("sha256", secret)
+            .update(body.toString())
+            .digest("hex");
+
+        const isSignatureValid = expectedSignature === razorpay_signature;
+
+        if (isSignatureValid) {
+            res.status(200).json({ message: "Payment verified successfully", success: true });
+        } else {
+            res.status(400).json({ message: "Invalid signature", success: false });
+        }
+    } catch (error) {
+        console.error("Razorpay Verification Error:", error);
+        res.status(500).json({ message: error.message });
     }
 };

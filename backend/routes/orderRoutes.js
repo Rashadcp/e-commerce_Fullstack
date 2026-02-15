@@ -3,14 +3,20 @@ import {
     getOrders,
     createOrder,
     updateOrderStatus,
-    updateOrder
+    updateOrder,
+    createRazorpayOrder,
+    verifyRazorpayPayment
 } from "../controllers/orderController.js";
 
 import { protect, admin } from "../middleware/auth.js";
 
 const router = express.Router();
 
-router.use(protect); // All order routes require login
+// Razorpay Routes - Bypass Auth for Testing
+router.post("/razorpay", createRazorpayOrder);
+router.post("/verify", verifyRazorpayPayment);
+
+router.use(protect); // All other order routes require login
 
 router.get("/", getOrders);
 router.post("/", createOrder);

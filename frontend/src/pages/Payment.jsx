@@ -3,44 +3,129 @@ import { useState, useContext } from "react";
 import { CartContext } from "./CartProvider";
 import axios from "axios";
 
+const API_URL = import.meta.env.VITE_API_URL || "/api";
+
 function Payment() {
   const { cart, clearCart, user } = useContext(CartContext);
   const location = useLocation();
   const navigate = useNavigate();
-  const totalAmount = location.state?.totalAmount || 0;
+  const { totalAmount = 0, address, city, state: region, pincode, name: customerName, phone } = location.state || {};
 
-  const [paymentMethod, setPaymentMethod] = useState("");
-  const [onlineOption, setOnlineOption] = useState("card");
-  const [formData, setFormData] = useState({
-    cardNumber: "",
-    expiry: "",
-    cvv: "",
-    upiId: "",
-    bank: "",
-    emiOption: "",
-  });
+  const [paymentMethod, setPaymentMethod] = useState("Online Payment");
+  const [loading, setLoading] = useState(false);
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleRazorpayPayment = async () => {
+    setLoading(true);
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${user?.token}`,
+        },
+      };
+
+      // 1. Create Razorpay Order on the backend
+      const { data: razorpayOrder } = await axios.post(
+        `${API_URL}/orders/razorpay`,
+        { amount: totalAmount },
+        config
+      );
+
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+        amount: razorpayOrder.amount,
+        currency: razorpayOrder.currency,
+        name: "Refuel Energy Drink",
+        description: "Order Payment",
+        order_id: razorpayOrder.id,
+        handler: async (response) => {
+          try {
+            // 2. Verify Payment on the backend
+            const verifyData = {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+            };
+
+            const { data: verificationResult } = await axios.post(
+              `${API_URL}/orders/verify`,
+              verifyData,
+              config
+            );
+
+            if (verificationResult.success) {
+              // 3. Create actual order in database
+              const orderData = {
+                items: cart,
+                totalAmount,
+                shippingAddress: {
+                  address,
+                  city,
+                  state: region,
+                  postalCode: pincode,
+                  country: "India",
+                },
+                paymentMethod: "Online (Razorpay)",
+                paymentDetails: {
+                  razorpay_order_id: response.razorpay_order_id,
+                  razorpay_payment_id: response.razorpay_payment_id,
+                },
+              };
+
+              await axios.post(`${API_URL}/orders`, orderData, config);
+
+              alert(`✅ Payment of ₹${totalAmount.toFixed(2)} successful!`);
+              clearCart();
+              navigate("/orders");
+            } else {
+              alert("❌ Payment verification failed!");
+            }
+          } catch (err) {
+            console.error("Verification error:", err);
+            alert("❌ Error verifying payment!");
+          }
+        },
+        prefill: {
+          name: customerName || user?.name || "",
+          email: user?.email || "",
+          contact: phone || user?.number || "",
+        },
+        theme: {
+          color: "#00b2fe",
+        },
+      };
+
+      const rzp1 = new window.Razorpay(options);
+      rzp1.on("payment.failed", function (response) {
+        alert("❌ Payment Failed: " + response.error.description);
+      });
+      rzp1.open();
+    } catch (error) {
+      console.error("Razorpay error full object:", error);
+      console.error("Razorpay error details:", error.response?.data);
+      const errorMsg = error.response?.data?.message || "Failed to initiate payment!";
+      const details = error.response?.data?.details ? `\n\nDetails: ${error.response.data.details}` : "";
+      alert(`❌ ${errorMsg}${details}`);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!paymentMethod) {
-      alert("⚠️ Please select a payment method!");
-      return;
-    }
-
-    // Create order object
+  const handleCashOnDelivery = async () => {
+    setLoading(true);
     const newOrder = {
       items: cart,
       totalAmount,
-      paymentMethod,
-      paymentDetails: formData,
+      shippingAddress: {
+        address,
+        city,
+        state: region,
+        postalCode: pincode,
+        country: "India"
+      },
+      paymentMethod: "Cash on Delivery",
+      paymentDetails: { status: "Pending" },
     };
 
-    // Auth config
     const config = {
       headers: {
         Authorization: `Bearer ${user?.token}`,
@@ -48,23 +133,39 @@ function Payment() {
     };
 
     try {
-      await axios.post("http://localhost:5000/orders", newOrder, config);
-      alert(`✅ Payment of ₹${totalAmount.toFixed(2)} successful!`);
-
+      await axios.post(`${API_URL}/orders`, newOrder, config);
+      alert(`✅ Order placed! Payment of ₹${totalAmount.toFixed(2)} due on delivery.`);
       clearCart();
       navigate("/orders");
     } catch (error) {
       console.error("❌ Error saving order:", error);
-      const msg = error.response?.data?.message || "Failed to save order details!";
-      alert(`❌ ${msg}`);
+      alert(`❌ ${error.response?.data?.message || "Failed to save order!"}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!paymentMethod) {
+      alert("⚠️ Please select a payment method!");
+      return;
+    }
+
+    if (paymentMethod === "Online Payment") {
+      handleRazorpayPayment();
+    } else if (paymentMethod === "Cash on Delivery") {
+      handleCashOnDelivery();
+    } else {
+      alert("⚠️ Selected payment method is currently unavailable.");
     }
   };
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center py-20">
+    <div className="min-h-screen bg-black flex items-center justify-center py-20 px-4">
       <div className="bg-[#111] p-8 rounded-2xl shadow-xl max-w-md w-full text-white border border-[#00b2fe]">
         <h2 className="text-3xl font-bold text-center mb-6 text-[#00b2fe]">
-          Choose Payment Method 💳
+          Checkout 💳
         </h2>
 
         <p className="text-center text-lg mb-6">
@@ -74,126 +175,50 @@ function Payment() {
           </span>
         </p>
 
-        <div className="space-y-3 mb-6">
-          {["Cash on Delivery", "Online Payment", "Internet Banking", "EMI"].map(
-            (method) => (
-              <label
-                key={method}
-                className={`flex items-center gap-3 p-3 border rounded-lg cursor-pointer transition ${paymentMethod === method
-                    ? "border-[#00b2fe] bg-[#1a1a1a]"
-                    : "border-gray-600 hover:border-[#00b2fe]"
-                  }`}
-              >
-                <input
-                  type="radio"
-                  name="paymentMethod"
-                  value={method}
-                  checked={paymentMethod === method}
-                  onChange={(e) => setPaymentMethod(e.target.value)}
-                />
-                <span>{method}</span>
-              </label>
-            )
-          )}
+        <div className="space-y-4 mb-8">
+          {[
+            { id: "Online Payment", label: "Online Payment (Razorpay)", icon: "🌐" },
+            { id: "Cash on Delivery", label: "Cash on Delivery", icon: "💵" },
+          ].map((method) => (
+            <label
+              key={method.id}
+              className={`flex items-center gap-4 p-4 border rounded-xl cursor-pointer transition-all duration-200 ${paymentMethod === method.id
+                ? "border-[#00b2fe] bg-[#1a1a1a] shadow-[0_0_15px_rgba(0,178,254,0.2)]"
+                : "border-gray-700 hover:border-gray-500"
+                }`}
+            >
+              <input
+                type="radio"
+                name="paymentMethod"
+                value={method.id}
+                checked={paymentMethod === method.id}
+                onChange={(e) => setPaymentMethod(e.target.value)}
+                className="w-5 h-5 accent-[#00b2fe]"
+              />
+              <span className="text-xl">{method.icon}</span>
+              <span className="font-medium">{method.label}</span>
+            </label>
+          ))}
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {paymentMethod === "Online Payment" && (
+        <button
+          onClick={handleSubmit}
+          disabled={loading}
+          className={`w-full py-4 bg-[#00b2fe] hover:bg-[#0090d1] text-white font-bold rounded-xl transition-all duration-200 transform active:scale-95 flex items-center justify-center gap-2 ${loading ? "opacity-70 cursor-not-allowed" : ""
+            }`}
+        >
+          {loading ? (
+            <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+          ) : (
             <>
-              <div className="flex gap-3 justify-center mb-3">
-                <button
-                  type="button"
-                  onClick={() => setOnlineOption("card")}
-                  className={`px-4 py-2 rounded-lg ${onlineOption === "card"
-                      ? "bg-[#00b2fe] text-white"
-                      : "bg-transparent border border-gray-600 text-gray-300"
-                    }`}
-                >
-                  💳 Card
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setOnlineOption("upi")}
-                  className={`px-4 py-2 rounded-lg ${onlineOption === "upi"
-                      ? "bg-[#00b2fe] text-white"
-                      : "bg-transparent border border-gray-600 text-gray-300"
-                    }`}
-                >
-                  📱 UPI
-                </button>
-              </div>
-
-              {onlineOption === "card" && (
-                <>
-                  <div>
-                    <label className="block mb-1 text-gray-300">Card Number</label>
-                    <input
-                      type="text"
-                      name="cardNumber"
-                      maxLength={16}
-                      required
-                      onChange={handleChange}
-                      className="w-full px-4 py-2 bg-transparent border border-gray-600 rounded-lg focus:border-[#00b2fe]"
-                    />
-                  </div>
-
-                  <div className="flex gap-3">
-                    <div className="flex-1">
-                      <label className="block mb-1 text-gray-300">Expiry</label>
-                      <input
-                        type="text"
-                        name="expiry"
-                        placeholder="MM/YY"
-                        required
-                        onChange={handleChange}
-                        className="w-full px-4 py-2 bg-transparent border border-gray-600 rounded-lg focus:border-[#00b2fe]"
-                      />
-                    </div>
-
-                    <div className="flex-1">
-                      <label className="block mb-1 text-gray-300">CVV</label>
-                      <input
-                        type="password"
-                        name="cvv"
-                        maxLength={3}
-                        required
-                        onChange={handleChange}
-                        className="w-full px-4 py-2 bg-transparent border border-gray-600 rounded-lg focus:border-[#00b2fe]"
-                      />
-                    </div>
-                  </div>
-                </>
-              )}
-
-              {onlineOption === "upi" && (
-                <div>
-                  <label className="block mb-1 text-gray-300">Enter UPI ID</label>
-                  <input
-                    type="text"
-                    name="upiId"
-                    placeholder="example@upi"
-                    required
-                    onChange={handleChange}
-                    className="w-full px-4 py-2 bg-transparent border border-gray-600 rounded-lg focus:border-[#00b2fe]"
-                  />
-                </div>
-              )}
+              {paymentMethod === "Online Payment" ? "Pay Now" : "Confirm Order"} &nbsp; ₹{totalAmount.toFixed(2)}
             </>
           )}
+        </button>
 
-          {paymentMethod === "Cash on Delivery" && (
-            <div className="text-center text-gray-400">
-              <p>💵 Pay when you receive your order.</p>
-            </div>
-          )}
-
-          <button
-            type="submit"
-            className="w-full py-3 bg-[#00b2fe] hover:bg-[#0090d1] text-white font-bold rounded-lg transition"
-          >
-            Confirm & Pay ₹{totalAmount.toFixed(2)}
-          </button>
-        </form>
+        <p className="mt-6 text-center text-xs text-gray-500">
+          Secure payment powered by Razorpay
+        </p>
       </div>
     </div>
   );
