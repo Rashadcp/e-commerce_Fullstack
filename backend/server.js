@@ -10,7 +10,11 @@ const app = express();
 // Connect to Database
 connectDB();
 
-app.use(cors());
+app.use(cors({
+  origin: "*", // Or set this to your Vercel URL later for better security
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
 app.use(express.json());
 
 app.use((req, res, next) => {
