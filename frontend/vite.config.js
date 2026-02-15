@@ -7,8 +7,12 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss({
-      // optional: only if you want to customize paths
       config: "./tailwind.config.js",
     }),
   ],
+  build: {
+    outDir: "dist",
+    emptyOutDir: true,
+  },
+  base: "/",
 });
