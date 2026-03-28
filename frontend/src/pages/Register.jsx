@@ -76,7 +76,7 @@ function Register() {
             placeholder="Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="border border-white rounded px-4 py-2 focus:outline-none focus:border-[#8dc53e] bg-[#b4bca8]"
+            className="border border-white rounded px-4 py-2 focus:outline-none focus:border-[#8dc53e] bg-white text-gray-800"
             required
           />
           <input
@@ -84,7 +84,7 @@ function Register() {
             placeholder="Phone Number"
             value={number}
             onChange={(e) => setNumber(e.target.value)}
-            className="border border-gray-300 rounded px-4 py-2 focus:outline-none focus:border-[#8dc53e] bg-[#b0b9a4]"
+            className="border border-gray-300 rounded px-4 py-2 focus:outline-none focus:border-[#8dc53e] bg-white text-gray-800"
             required
           />
           <input
@@ -92,7 +92,7 @@ function Register() {
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="border border-gray-300 rounded px-4 py-2 focus:outline-none focus:border-[#8dc53e] bg-[#bbc1b3]"
+            className="border border-gray-300 rounded px-4 py-2 focus:outline-none focus:border-[#8dc53e] bg-white text-gray-800"
             required
           />
 
@@ -103,7 +103,7 @@ function Register() {
               placeholder="Password (min 6 chars, must include @!#)"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full border border-gray-300 rounded px-4 py-2 pr-10 focus:outline-none focus:border-[#8dc53e] bg-[#bfc5b7]"
+              className="w-full border border-gray-300 rounded px-4 py-2 pr-10 focus:outline-none focus:border-[#8dc53e] bg-white text-gray-800"
               required
             />
             <button

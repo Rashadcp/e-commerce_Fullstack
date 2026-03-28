@@ -38,15 +38,15 @@ function AdminDashboard() {
 
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#8dc53e] text-white transition-transform duration-300 ease-in-out md:relative md:translate-x-0 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#8dc53e] text-gray-900 shadow-2xl transition-transform duration-300 ease-in-out md:relative md:translate-x-0 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"
           }`}
       >
         <div className="p-5 flex flex-col h-full">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold">Admin Panel</h2>
+            <h2 className="text-3xl font-black tracking-tighter uppercase italic">Admin</h2>
             <button
               onClick={() => setIsSidebarOpen(false)}
-              className="md:hidden text-white hover:bg-white/20 p-1 rounded"
+              className="md:hidden text-gray-800 hover:bg-black/10 p-1 rounded"
             >
               <FaTimes size={24} />
             </button>
@@ -63,9 +63,9 @@ function AdminDashboard() {
                   key={link.path}
                   to={link.path}
                   onClick={handleLinkClick}
-                  className={`p-3 rounded transition-colors font-medium ${isActive
-                    ? "bg-white text-[#8dc53e] shadow-sm"
-                    : "hover:bg-white/10 text-white"
+                  className={`p-3 rounded-xl transition-all duration-200 font-bold flex items-center gap-3 ${isActive
+                    ? "bg-gray-900 text-[#8dc53e] shadow-lg transform scale-105 ml-2"
+                    : "hover:bg-black/10 text-gray-900"
                     }`}
                 >
                   {link.name}
@@ -73,28 +73,28 @@ function AdminDashboard() {
               );
             })}
 
-            <div className="border-t border-white/20 my-2 pt-2">
+            <div className="border-t border-black/10 my-4 pt-4">
               <Link
                 to="/"
                 onClick={handleLinkClick}
-                className="block p-3 rounded hover:bg-white/10 transition-colors"
+                className="block p-3 rounded-xl font-bold hover:bg-black/10 transition-colors flex items-center gap-3"
               >
-                Back to Shop
+                ← Back to Shop
               </Link>
             </div>
           </nav>
 
           <button
             onClick={handleLogout}
-            className="mt-4 bg-white/20 hover:bg-white/30 text-white p-3 rounded transition-colors font-bold w-full flex items-center justify-center gap-2"
+            className="mt-4 bg-black/10 hover:bg-black/20 text-gray-900 p-4 rounded-xl transition-all font-black uppercase text-sm w-full flex items-center justify-center gap-2 border border-black/5"
           >
-            Logout
+            Logout session
           </button>
         </div>
       </aside>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden text-gray-900">
         {/* Mobile Header */}
         <header className="bg-white shadow-sm p-4 flex items-center md:hidden z-30">
           <button

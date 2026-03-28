@@ -54,7 +54,7 @@ function Address() {
             placeholder="Full Name"
             value={form.name}
             onChange={handleChange}
-            className="border rounded px-4 py-2 focus:outline-[#8dc53e]"
+            className="border border-gray-300 rounded px-4 py-2 bg-white text-gray-800 focus:outline-[#8dc53e] focus:border-[#8dc53e]"
           />
 
           <input
@@ -63,7 +63,7 @@ function Address() {
             placeholder="Phone Number"
             value={form.phone}
             onChange={handleChange}
-            className="border rounded px-4 py-2 focus:outline-[#8dc53e]"
+            className="border border-gray-300 rounded px-4 py-2 bg-white text-gray-800 focus:outline-[#8dc53e] focus:border-[#8dc53e]"
           />
 
           <textarea
@@ -71,7 +71,7 @@ function Address() {
             placeholder="Full Address"
             value={form.address}
             onChange={handleChange}
-            className="border rounded px-4 py-2 focus:outline-[#8dc53e]"
+            className="border border-gray-300 rounded px-4 py-2 bg-white text-gray-800 focus:outline-[#8dc53e] focus:border-[#8dc53e]"
             rows="3"
           />
 
@@ -82,7 +82,7 @@ function Address() {
               placeholder="City"
               value={form.city}
               onChange={handleChange}
-              className="border rounded px-4 py-2 w-1/2 focus:outline-[#8dc53e]"
+              className="border border-gray-300 rounded px-4 py-2 w-1/2 bg-white text-gray-800 focus:outline-[#8dc53e] focus:border-[#8dc53e]"
             />
             <input
               type="text"
@@ -90,7 +90,7 @@ function Address() {
               placeholder="State"
               value={form.state}
               onChange={handleChange}
-              className="border rounded px-4 py-2 w-1/2 focus:outline-[#8dc53e]"
+              className="border border-gray-300 rounded px-4 py-2 w-1/2 bg-white text-gray-800 focus:outline-[#8dc53e] focus:border-[#8dc53e]"
             />
           </div>
 
@@ -100,7 +100,7 @@ function Address() {
             placeholder="Pincode"
             value={form.pincode}
             onChange={handleChange}
-            className="border rounded px-4 py-2 focus:outline-[#8dc53e]"
+            className="border border-gray-300 rounded px-4 py-2 bg-white text-gray-800 focus:outline-[#8dc53e] focus:border-[#8dc53e]"
           />
 
           <button

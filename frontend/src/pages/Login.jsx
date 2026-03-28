@@ -71,7 +71,7 @@ function Login() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="border border-gray-300 rounded px-4 py-2 focus:outline-none focus:border-[#8dc53e] bg-[#b4bca8]"
+            className="border border-gray-300 rounded px-4 py-2 focus:outline-none focus:border-[#8dc53e] bg-white text-gray-800"
           />
 
           {/* Password with toggle */}
@@ -82,7 +82,7 @@ function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:border-[#8dc53e] bg-[#b4bca8]"
+              className="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:border-[#8dc53e] bg-white text-gray-800"
             />
             <button
               type="button"

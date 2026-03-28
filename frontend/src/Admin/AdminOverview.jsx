@@ -149,7 +149,7 @@ function AdminOverview() {
             return (
               <g key={i}>
                 <rect x={x} y={y} width={barW} height={h} rx={4} fill="#00b2fe" />
-                <text x={x + barW / 2} y={height - 6} fontSize={11} textAnchor="middle" fill="#6b7280">
+                <text x={x + barW / 2} y={height - 6} fontSize={11} textAnchor="middle" fill="#374151" className="font-medium">
                   {d.date.slice(5)}
                 </text>
               </g>
@@ -191,8 +191,8 @@ function AdminOverview() {
   }
 
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold mb-6">Admin Overview</h2>
+    <div className="p-6 text-gray-900">
+      <h2 className="text-3xl font-bold mb-6 text-gray-800">Admin Overview</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <div className="bg-white p-4 rounded shadow">
@@ -209,14 +209,16 @@ function AdminOverview() {
         </div>
       </div>
 
-      <div className="mt-4 bg-white p-4 rounded shadow overflow-x-auto">
-        <h3 className="font-semibold mb-3">Revenue (last 7 days)</h3>
-        <BarChart data={last7} width={720} height={180} />
+      <div className="mt-4 bg-white p-6 rounded-xl shadow-md overflow-x-auto">
+        <h3 className="font-bold text-lg mb-4 text-gray-800 border-b pb-2">Revenue (last 7 days)</h3>
+        <div className="flex justify-center">
+          <BarChart data={last7} width={720} height={200} />
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-white p-4 rounded shadow flex flex-col items-center">
-          <h3 className="font-semibold mb-3">Orders by Status</h3>
+        <div className="bg-white p-6 rounded-xl shadow-md flex flex-col items-center">
+          <h3 className="font-bold text-lg mb-4 text-gray-800 border-b w-full text-center pb-2">Orders by Status</h3>
           <PieChart
             data={Object.entries(statusCounts).map(([k, v]) => ({ label: k, value: v }))}
             size={180}
@@ -232,8 +234,8 @@ function AdminOverview() {
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded shadow flex flex-col items-center">
-          <h3 className="font-semibold mb-3">Top Products (by qty)</h3>
+        <div className="bg-white p-6 rounded-xl shadow-md flex flex-col items-center">
+          <h3 className="font-bold text-lg mb-4 text-gray-800 border-b w-full text-center pb-2">Top Products (by qty)</h3>
           <PieChart
             data={topProducts.map(([name, qty]) => ({ label: name, value: qty }))}
             size={180}
@@ -254,8 +256,8 @@ function AdminOverview() {
         </div>
       </div>
 
-      <div className="mt-6 bg-white p-4 rounded shadow">
-        <h3 className="font-semibold mb-3">Recent Orders</h3>
+      <div className="mt-8 bg-white p-6 rounded-xl shadow-md">
+        <h2 className="text-2xl font-bold mb-6 text-gray-800 border-b pb-4">Recent Orders</h2>
         {recentOrders.length === 0 ? (
           <p className="text-sm text-gray-500">No recent orders</p>
         ) : (
